@@ -18,6 +18,22 @@ import java.nio.file.Files;
 
 public class TryWithResources {
 
+    static final class BadWriter extends FileWriter {
+        private BadWriter(File file) throws IOException {
+            super(file);
+        }
+
+        @Override
+        public void write(String s) throws IOException {
+            throw new IOException("Failed to write!");
+        }
+
+        @Override
+        public void close() throws IOException {
+            throw new IOException("Failed to close!");
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         File file = createTmpFile();
 
@@ -43,7 +59,10 @@ public class TryWithResources {
         // example how multiple resources can be used
         multipleClose(file, createTmpFile());
         multipleClose2(file, createTmpFile());
+
+        suppressedExceptions(file);
     }
+
 
     static void oldWayWrite(File file) {
         FileWriter fw = null;
@@ -103,7 +122,7 @@ public class TryWithResources {
         }
     }
 
-    private static void multipleClose(File from, File to) {
+    static void multipleClose(File from, File to) {
         try (
             BufferedReader br = new BufferedReader(new FileReader(from)){
                 @Override
@@ -130,7 +149,7 @@ public class TryWithResources {
         java7Read(to);
     }
 
-    private static void multipleClose2(File f1, File f2) {
+    static void multipleClose2(File f1, File f2) {
         System.out.println();
         try (FileReader from = new FileReader(f1); FileWriter to = new FileWriter(f2)) {
             int data;
@@ -141,6 +160,18 @@ public class TryWithResources {
             e.printStackTrace();
         }
         java7Read(f2);
+    }
+
+    static void suppressedExceptions(File file) {
+        try (FileWriter fw = new BadWriter(file)) {
+            fw.write("O-o!");
+        } catch (IOException e) {
+            System.err.println("Thrown: " + e.getMessage());
+            Throwable[] suppressed = e.getSuppressed();
+            for (Throwable t : suppressed) {
+                System.err.println("Suppressed: " + t.getMessage());
+            }
+        }
     }
 
     private static File createTmpFile() {
