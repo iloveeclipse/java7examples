@@ -8,9 +8,20 @@
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
 
-public class BinaryLiterals {
-    byte b  =  0b01001001;
-    short s =  0B00100100;
-    int i   =  0b10010010;
-    long l  =  0B01001001;
+public class StringsInSwitch {
+
+    public static void main(String[] args) {
+        String os = System.getProperty("os.name");
+        switch (os) {
+        case "Linux":
+            System.out.println("Cool!");
+            break;
+        case "Windows":
+            System.out.println("Not so cool!");
+            break;
+        default:
+            System.out.println("Obst?");
+            break;
+        }
+    }
 }
