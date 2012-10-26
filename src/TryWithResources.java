@@ -1,11 +1,3 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-
 /*******************************************************************************
  * Copyright (c) 2012 Andrey Loskutov. All rights reserved.
  * This program and the accompanying materials
@@ -15,6 +7,14 @@ import java.nio.file.Files;
  * Contributors:
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 public class TryWithResources {
 
