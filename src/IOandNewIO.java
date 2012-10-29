@@ -9,32 +9,80 @@
  *******************************************************************************/
 
 import static java.lang.System.*;
+import static java.nio.file.attribute.PosixFilePermission.*;
+import static java.nio.file.attribute.PosixFilePermissions.*;
+import static java.util.Arrays.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class IOandNewIO {
     public static void main(String[] args) throws IOException {
 
         Path path = Files.createTempFile(null, ".txt");
 
+        basicStuff(path);
+
+        fileAttributes(path);
+    }
+
+    static void basicStuff(Path path) throws IOException {
         Files.write(path, "Hello\n".getBytes());
 
         Path link = path.getParent().resolve("link");
-
         Files.deleteIfExists(link);
 
         Path symlink = Files.createSymbolicLink(link, path);
 
         out.println("Real file: " + path);
-        out.println("Link path: " + link);
         out.println("Link file: " + symlink);
 
         out.println("Is link? " + Files.isSymbolicLink(symlink));
         out.println("Link target: " + Files.readSymbolicLink(symlink));
         out.println("Content: " + Files.readAllLines(path, Charset.defaultCharset()));
         out.println("Content type: " + Files.probeContentType(path));
+    }
+
+    static void fileAttributes(Path path) throws IOException {
+        Path onlyForMe = path.getParent().resolve("onlyForMe");
+        Files.deleteIfExists(onlyForMe);
+
+        // classic command line
+        Set<PosixFilePermission> permissions = fromString("rwxrwxrwx");
+
+        // object oriented way
+        permissions = sort(asList(PosixFilePermission.values()));
+
+        Files.createFile(onlyForMe, PosixFilePermissions.asFileAttribute(permissions));
+
+        Set<PosixFilePermission> freeAccess = sort(Files.getPosixFilePermissions(onlyForMe));
+        System.out.println(freeAccess);
+
+        freeAccess.removeAll(asList(GROUP_WRITE, OTHERS_READ, OTHERS_EXECUTE));
+
+        PosixFileAttributeView attributeView = Files.getFileAttributeView(onlyForMe, PosixFileAttributeView.class);
+        attributeView.setPermissions(freeAccess);
+
+        PosixFileAttributes fileAttributes = attributeView.readAttributes();
+        System.out.println(sort(fileAttributes.permissions()));
+        System.out.println("Current owner: " + attributeView.getOwner());
+
+        BasicFileAttributeView basic = Files.getFileAttributeView(onlyForMe, BasicFileAttributeView.class);
+        // prints device id and inode on Linux
+        System.out.println(basic.readAttributes().fileKey());
+    }
+
+    private static <V> Set<V> sort(Collection<V> set){
+        return new TreeSet<>(set);
     }
 }
