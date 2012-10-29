@@ -151,7 +151,9 @@ public class TryWithResources {
 
     static void multipleClose2(File f1, File f2) {
         System.out.println();
-        try (FileReader from = new FileReader(f1); FileWriter to = new FileWriter(f2)) {
+        try (
+            FileReader from = new FileReader(f1);
+            FileWriter to = new FileWriter(f2)) {
             int data;
             while ((data = from.read()) != -1) {
                 to.write(data);
