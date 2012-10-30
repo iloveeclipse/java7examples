@@ -1,7 +1,3 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-
 /*******************************************************************************
  * Copyright (c) 2012 Andrey Loskutov. All rights reserved.
  * This program and the accompanying materials
@@ -11,6 +7,10 @@ import java.net.MalformedURLException;
  * Contributors:
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 @SuppressWarnings("all")
 public class RethrowingExceptionsImproved {
