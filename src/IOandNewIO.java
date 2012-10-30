@@ -15,8 +15,13 @@ import static java.util.Arrays.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
+import java.nio.file.DirectoryStream.Filter;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -34,6 +39,8 @@ public class IOandNewIO {
         basicStuff(path);
 
         fileAttributes(path);
+
+        directoryStream(path.getParent());
     }
 
     static void basicStuff(Path path) throws IOException {
@@ -73,6 +80,9 @@ public class IOandNewIO {
         PosixFileAttributeView attributeView = Files.getFileAttributeView(onlyForMe, PosixFileAttributeView.class);
         attributeView.setPermissions(freeAccess);
 
+        Files.setOwner(path, FileSystems.getDefault().getUserPrincipalLookupService()
+                .lookupPrincipalByName("aloskuto"));
+
         PosixFileAttributes fileAttributes = attributeView.readAttributes();
         System.out.println(sort(fileAttributes.permissions()));
         System.out.println("Current owner: " + attributeView.getOwner());
@@ -80,6 +90,34 @@ public class IOandNewIO {
         BasicFileAttributeView basic = Files.getFileAttributeView(onlyForMe, BasicFileAttributeView.class);
         // prints device id and inode on Linux
         System.out.println(basic.readAttributes().fileKey());
+    }
+
+    static void directoryStream(Path dir) throws IOException {
+        // simple name based filter
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.{tmp,test}")) {
+            for (Path path : stream) {
+                System.out.println(path);
+            }
+        }
+
+        // filter based on file matchers and file attributes
+        FileSystem fs = FileSystems.getDefault();
+        final PathMatcher regexMatcher = fs.getPathMatcher("regex:.*7\\.\\d+.*");
+        final PathMatcher globMatcher = fs.getPathMatcher("glob:/tmp/*.*");
+
+        Filter<? super Path> filter = new Filter<Path>() {
+            @Override
+            public boolean accept(Path path) throws IOException {
+                return globMatcher.matches(path) &&
+                        regexMatcher.matches(path) &&
+                        !Files.isSymbolicLink(path);
+            }
+        };
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, filter)) {
+            for (Path path : stream) {
+                System.out.println(path);
+            }
+        }
     }
 
     private static <V> Set<V> sort(Collection<V> set){
