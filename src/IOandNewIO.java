@@ -19,10 +19,14 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
@@ -32,6 +36,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class IOandNewIO {
+
+
+
     public static void main(String[] args) throws IOException {
 
         Path path = Files.createTempFile(null, ".txt");
@@ -41,6 +48,8 @@ public class IOandNewIO {
         fileAttributes(path);
 
         directoryStream(path.getParent());
+
+        fileVisitor(path.getParent());
     }
 
     static void basicStuff(Path path) throws IOException {
@@ -117,6 +126,89 @@ public class IOandNewIO {
             for (Path path : stream) {
                 System.out.println(path);
             }
+        }
+    }
+
+    static void fileVisitor(Path path) throws IOException {
+        FileVisitor<? super Path> visitor = new MySimpleFileVisitor();
+        try {
+            Files.walkFileTree(path, visitor);
+        } catch (IOException e) {
+            System.out.println("Simple visitor: " + e.getMessage());
+        }
+        visitor = new MyNotSoSimpleFileVisitor();
+        Files.walkFileTree(path, visitor);
+    }
+
+    private static final class MySimpleFileVisitor extends SimpleFileVisitor<Path> {
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                throws IOException {
+            System.out.println("preVisitDirectory: " + dir);
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                throws IOException {
+            System.out.println("visitFile: " + file);
+            throw new IOException("Don't like to walk anymore!");
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc)
+                throws IOException {
+            // surprise: the line below is not printed even if visitFile() throws exception
+            System.out.println("visitFileFailed: " + file);
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc)
+                throws IOException {
+            // surprise: the line below is not printed even if visitFile() throws exception
+            System.out.println("postVisitDirectory: " + dir);
+            return FileVisitResult.TERMINATE;
+        }
+    }
+
+    private static final class MyNotSoSimpleFileVisitor extends SimpleFileVisitor<Path> {
+
+        private IOException ex;
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                throws IOException {
+            System.out.println("preVisitDirectory: " + dir);
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                throws IOException {
+            System.out.println("visitFile: " + file);
+            ex = new IOException("Don't like to walk anymore!");
+            return visitFileFailed(file, ex);
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc)
+                throws IOException {
+            System.out.println("visitFileFailed: " + file);
+            return FileVisitResult.SKIP_SIBLINGS;
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc)
+                throws IOException {
+            System.out.println("postVisitDirectory: " + dir);
+            if(exc != null){
+                System.out.println(exc.getMessage());
+            }
+            if(ex != null){
+                System.out.println(ex.getMessage());
+            }
+            return FileVisitResult.TERMINATE;
         }
     }
 
