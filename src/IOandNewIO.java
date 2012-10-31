@@ -24,7 +24,6 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFileAttributeView;
@@ -134,13 +133,13 @@ public class IOandNewIO {
         try {
             Files.walkFileTree(path, visitor);
         } catch (IOException e) {
-            System.out.println("Simple visitor: " + e.getMessage());
+            System.out.println("Failed to walk: " + e.getMessage());
         }
         visitor = new MyNotSoSimpleFileVisitor();
         Files.walkFileTree(path, visitor);
     }
 
-    private static final class MySimpleFileVisitor extends SimpleFileVisitor<Path> {
+    private static final class MySimpleFileVisitor implements FileVisitor<Path> {
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                 throws IOException {
@@ -172,7 +171,7 @@ public class IOandNewIO {
         }
     }
 
-    private static final class MyNotSoSimpleFileVisitor extends SimpleFileVisitor<Path> {
+    private static final class MyNotSoSimpleFileVisitor implements FileVisitor<Path> {
 
         private IOException ex;
 
@@ -187,14 +186,16 @@ public class IOandNewIO {
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                 throws IOException {
             System.out.println("visitFile: " + file);
-            ex = new IOException("Don't like to walk anymore!");
-            return visitFileFailed(file, ex);
+            return visitFileFailed(file, new IOException("Don't like to walk anymore!"));
         }
 
         @Override
         public FileVisitResult visitFileFailed(Path file, IOException exc)
                 throws IOException {
             System.out.println("visitFileFailed: " + file);
+            if(exc != null){
+                ex = exc;
+            }
             return FileVisitResult.SKIP_SIBLINGS;
         }
 
@@ -203,10 +204,10 @@ public class IOandNewIO {
                 throws IOException {
             System.out.println("postVisitDirectory: " + dir);
             if(exc != null){
-                System.out.println(exc.getMessage());
+                System.out.println("Got from outside: " + exc.getMessage());
             }
             if(ex != null){
-                System.out.println(ex.getMessage());
+                System.out.println("Caught exception: " + ex.getMessage());
             }
             return FileVisitResult.TERMINATE;
         }
