@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Fri Oct 19 13:45:37 CEST 2012
+#Wed Oct 31 13:15:04 CET 2012
 cloud_id=edu.umd.cs.findbugs.cloud.doNothingCloud
 detectorAppendingToAnObjectOutputStream=AppendingToAnObjectOutputStream|true
 detectorAtomicityProblem=AtomicityProblem|true
@@ -158,7 +158,6 @@ detectorWrongMapIterator=WrongMapIterator|true
 detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=3
 effort=default
-excludefilter0=/vobs/a93k/eclipse/internal/eclipse/template/fbExcludeFilter.xml|true
 filter_settings=Low|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,MALICIOUS_CODE,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|20
 filter_settings_neg=NOISE,I18N|
 run_at_full_build=false
