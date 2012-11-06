@@ -15,7 +15,7 @@ import java.net.MalformedURLException;
 @SuppressWarnings("all")
 public class RethrowingExceptionsImproved {
 
-    private void oldWayRethrow(boolean notFound) throws IOException {
+    void oldWayRethrow(boolean notFound) throws IOException {
         try {
             if (notFound) {
                 throw new FileNotFoundException();
@@ -27,7 +27,7 @@ public class RethrowingExceptionsImproved {
         }
     }
 
-    private void java7Rethrow(boolean notFound) throws FileNotFoundException, MalformedURLException {
+    void java7Rethrow(boolean notFound) throws FileNotFoundException, MalformedURLException {
         try {
             if (notFound) {
                 throw new FileNotFoundException();
