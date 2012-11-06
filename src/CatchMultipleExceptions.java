@@ -1,5 +1,3 @@
-import java.lang.reflect.Field;
-
 /*******************************************************************************
  * Copyright (c) 2012 Andrey Loskutov. All rights reserved.
  * This program and the accompanying materials
@@ -9,21 +7,27 @@ import java.lang.reflect.Field;
  * Contributors:
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
+
+import java.lang.reflect.Field;
+
 @SuppressWarnings("boxing")
 public class CatchMultipleExceptions {
     public static void main(String[] args) {
         oldWayCatch();
         java7Catch();
+        System.out.println("2 + 2 = " + sum(2, 2));
+    }
+
+    static int sum(Integer in1, Integer in2){
+        return in1 + in2;
     }
 
     static void oldWayCatch() {
         try {
             Field value = Integer.class.getDeclaredField("value");
             value.setAccessible(true);
-            Integer obj = new Integer(42);
-            System.out.println(obj);
-            value.set(obj, -1);
-            System.out.println(obj);
+            Integer obj = Integer.valueOf(2);
+            value.set(obj, 21);
         } catch (SecurityException e) {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
@@ -39,12 +43,11 @@ public class CatchMultipleExceptions {
         try {
             Field value = Integer.class.getDeclaredField("value");
             value.setAccessible(true);
-            Integer obj = new Integer(42);
-            System.out.println(obj);
-            value.set(obj, -1);
-            System.out.println(obj);
+            Integer obj = Integer.valueOf(2);
+            value.set(obj, 21);
         } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
+
 }
