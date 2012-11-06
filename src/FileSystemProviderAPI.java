@@ -8,6 +8,7 @@
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
 
+import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -22,25 +23,35 @@ public class FileSystemProviderAPI {
     public static void main(String[] args) throws Exception {
         List<FileSystemProvider> providers = FileSystemProvider.installedProviders();
         for (FileSystemProvider fsProvider : providers) {
-            System.out.println(fsProvider.getScheme() + ": " + fsProvider.getClass());
+            System.out.println("sheme: '" + fsProvider.getScheme() + "', provider: " + fsProvider.getClass());
         }
+
         Path tmpFile = Files.createTempFile("", ".tmp");
         Files.write(tmpFile, "Hello".getBytes());
         Path jarFile = Files.createTempFile("", ".jar");
-        JarOutputStream outputStream = new JarOutputStream(Files.newOutputStream(jarFile));
-        outputStream.putNextEntry(new ZipEntry("Hello"));
-        Files.copy(tmpFile, outputStream);
-        outputStream.close();
-        FileSystem fileSystem = FileSystems.newFileSystem(jarFile, FileSystemProviderAPI.class.getClassLoader());
-        System.out.println(fileSystem);
-        Iterable<Path> directories = fileSystem.getRootDirectories();
-        for (Path path2 : directories) {
-            System.out.println(path2.toUri());
-            DirectoryStream<Path> stream = Files.newDirectoryStream(path2);
-            for (Path path3 : stream) {
-                System.out.println(path3);
+
+        try(JarOutputStream outputStream = new JarOutputStream(Files.newOutputStream(jarFile))){
+            outputStream.putNextEntry(new ZipEntry(tmpFile.getFileName().toString()));
+            Files.copy(tmpFile, outputStream);
+        }
+
+        try(FileSystem fileSystem = createVirtualFS(jarFile)){
+            Iterable<Path> directories = fileSystem.getRootDirectories();
+            for (Path dir : directories) {
+                System.out.println("Reading dir: " + dir.toUri());
+                DirectoryStream<Path> stream = Files.newDirectoryStream(dir);
+                for (Path file : stream) {
+                    System.out.println("Reading file: " + file.toUri());
+                    System.out.println("\tfrom " + file.getFileSystem().provider().getClass());
+                    System.out.print("Content: ");
+                    Files.copy(file, System.out);
+                }
             }
         }
 
+    }
+
+    static FileSystem createVirtualFS(Path jarFile) throws IOException {
+        return FileSystems.newFileSystem(jarFile, FileSystemProviderAPI.class.getClassLoader());
     }
 }
