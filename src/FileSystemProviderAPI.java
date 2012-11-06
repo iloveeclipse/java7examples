@@ -8,13 +8,11 @@
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
 
-import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.List;
 import java.util.jar.JarOutputStream;
@@ -33,10 +31,7 @@ public class FileSystemProviderAPI {
         outputStream.putNextEntry(new ZipEntry("Hello"));
         Files.copy(tmpFile, outputStream);
         outputStream.close();
-        URI uri = new URI("file:"+ jarFile.toString());
-        System.out.println(uri);
-        Path path = Paths.get(uri);
-        FileSystem fileSystem = FileSystems.newFileSystem(path, FileSystemProviderAPI.class.getClassLoader());
+        FileSystem fileSystem = FileSystems.newFileSystem(jarFile, FileSystemProviderAPI.class.getClassLoader());
         System.out.println(fileSystem);
         Iterable<Path> directories = fileSystem.getRootDirectories();
         for (Path path2 : directories) {
