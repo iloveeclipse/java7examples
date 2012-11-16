@@ -1,3 +1,4 @@
+package java7;
 /*******************************************************************************
  * Copyright (c) 2012 Andrey Loskutov. All rights reserved.
  * This program and the accompanying materials
@@ -8,12 +9,9 @@
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
 
-public class UnderscoresInNumericLiterals {
-
-    short answer = 0b1_0_1_0_1_0;
-    int twoMonkeys = 0xAFFE_AFFE;
-    long smallestLong = 0x8000_0000_0000_0000L;
-    long somePhoneNumber = +49_7031_4357_0L;
-    double e =  2.718_281_829D;
-
+public class BinaryLiterals {
+    byte b  =  0b01001001;
+    short s =  0B00100100;
+    int i   =  0b10010010;
+    long l  =  0B01001001;
 }

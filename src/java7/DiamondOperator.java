@@ -1,3 +1,4 @@
+package java7;
 
 /*******************************************************************************
  * Copyright (c) 2012 Andrey Loskutov. All rights reserved.
