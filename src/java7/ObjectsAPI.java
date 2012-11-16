@@ -1,7 +1,3 @@
-package java7;
-import java.util.Objects;
-
-
 /*******************************************************************************
  * Copyright (c) 2012 Andrey Loskutov. All rights reserved.
  * This program and the accompanying materials
@@ -11,6 +7,8 @@ import java.util.Objects;
  * Contributors:
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
+package java7;
+import java.util.Objects;
 
 public class ObjectsAPI {
     public static void main(String[] args) {

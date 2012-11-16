@@ -1,5 +1,3 @@
-package java7;
-
 /*******************************************************************************
  * Copyright (c) 2012 Andrey Loskutov. All rights reserved.
  * This program and the accompanying materials
@@ -9,6 +7,7 @@ package java7;
  * Contributors:
  *     Andrey Loskutov - initial API and implementation
  *******************************************************************************/
+package java7;
 
 import java.util.HashMap;
 import java.util.List;
