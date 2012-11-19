@@ -27,11 +27,25 @@ public class VarArgs {
         result = varargs();
         printArray(result);
 
-        result = varargs(null, "x");
+        result = varargs(null, null);
+        printArray(result);
+
+
+        result = varargs2(null);
+        printArray(result);
+
+        result = varargs2((String)null);
+        printArray(result);
+
+        result = varargs2(null, null);
         printArray(result);
     }
 
     static Object[] varargs(String ... strings) {
+        return strings;
+    }
+
+    static Object[] varargs2(String s, String ... strings) {
         return strings;
     }
 
