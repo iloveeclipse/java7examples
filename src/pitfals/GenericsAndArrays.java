@@ -11,12 +11,14 @@ package pitfals;
 
 import static java.util.Arrays.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * http://www.ibm.com/developerworks/java/library/j-jtp01255/index.html
+ * http://www.angelikalanger.com/GenericsFAQ/JavaGenericsFAQ.html
  * http://www.angelikalanger.com/Articles/Papers/JavaGenerics/ArraysInJavaGenerics.htm
  */
 @SuppressWarnings("boxing")
@@ -25,6 +27,7 @@ public class GenericsAndArrays {
     public static void main(String[] args) {
         invariantGenerics();
         invariantArrays();
+        invariantArrays2();
 
         listFunction();
         arrayFunction();
@@ -51,6 +54,16 @@ public class GenericsAndArrays {
             e.printStackTrace();
         }
     }
+
+    private static void invariantArrays2() {
+        Function<Integer> func1 = new IntegerListFunction();
+        Function<Number> func2 = new NumberListFunction();
+//        Function<?>[] functions = new Function<Integer>[]{func1, func2};
+        Function<?>[] functions = (Function<Integer>[]) Array.newInstance(Function.class, 2);
+        functions[0] = func1;
+        functions[1] = func2;
+    }
+
 
 
     static void listFunction() {
@@ -102,7 +115,6 @@ public class GenericsAndArrays {
 
         result = sum(new NumberArrayAndListFunction(), input);
         System.out.println(Arrays.toString(input) + "+ = " + result);
-
     }
 
 
