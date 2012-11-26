@@ -13,6 +13,11 @@ package pitfals;
 public class BoxingUnboxing {
 
     public static void main(String[] args) {
+        showNPEs();
+        showComparison();
+    }
+
+    private static void showNPEs() {
         int i = 0;
         try {
             i += calculate1(42);            // <- NPE here!!!
@@ -39,6 +44,14 @@ public class BoxingUnboxing {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void showComparison() {
+        Double d1 = new Double(0.1);
+        Double d2 = new Double(0.1);
+        double d3 = 0.1;
+        System.out.println("0.1 == 0.1? " + (d1 == d2));
+        System.out.println("0.1 == 0.1? " + (d1 == d3));
     }
 
     static Integer calculate1(Integer i){
