@@ -9,7 +9,11 @@
  *******************************************************************************/
 package pitfals;
 
-
+/**
+ * See
+ * <li> <a href="http://commons.apache.org/math/apidocs/org/apache/commons/math3/util/Precision.html">Precision</a>
+ * <li> <a href="http://en.wikipedia.org/wiki/Machine_epsilon">Machine epsilon</a>
+ */
 public class FloatingNumbers {
 
     public static void main(String[] args) {
@@ -17,6 +21,10 @@ public class FloatingNumbers {
         System.out.println(0.1 + 0.1);
         System.out.println(0.1 + 0.1 + 0.1);
 
+        Double d1 = Double.valueOf(0.3);
+        Double d2 = Double.valueOf(0.1 + 0.1 + 0.1);
+
+        System.out.println("0.3 == 0.3? " + d1.equals(d2) + " / " + (d1 == d2));
 
         System.out.println("---");
 
