@@ -23,9 +23,33 @@ import java.util.List;
 public class GenericsAndArrays {
 
     public static void main(String[] args) {
+        invariantGenerics();
+        invariantArrays();
+
         listFunction();
         arrayFunction();
         arrayAndListFunction();
+    }
+
+    private static void invariantGenerics() {
+        List<Integer> ints = new ArrayList<>();
+        List<Number> numbers = new ArrayList<>();
+        // numbers = ints; // can't compile that to avoid line below
+        numbers.add(new Integer(1));
+        numbers.add(new Double(1.0));
+        System.out.println(numbers);
+    }
+
+    private static void invariantArrays() {
+        Integer[] ints = new Integer[2];
+        Number[] numbers;
+        numbers = ints; // OK!
+        numbers[0] = new Integer(1);
+        try {
+            numbers[1] = new Double(1.0); // runtime exception!
+        } catch (ArrayStoreException e) {
+            e.printStackTrace();
+        }
     }
 
 
