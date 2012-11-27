@@ -15,7 +15,10 @@ public class VarArgs {
 
     public static void main(String[] args) {
 
-        Object[] result = varargs(null);
+        Object[] result = varargs();
+        printArray(result);
+
+        result = varargs(null);
         printArray(result);
 
         result = varargs((String[])null);
