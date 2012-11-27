@@ -25,16 +25,16 @@ import java.util.List;
 public class GenericsAndArrays {
 
     public static void main(String[] args) {
-        invariantGenerics();
-        invariantArrays();
-        invariantArrays2();
+        covariantGenerics();
+        covariantArrays();
+        covariantArrays2();
 
         listFunction();
         arrayFunction();
         arrayAndListFunction();
     }
 
-    private static void invariantGenerics() {
+    private static void covariantGenerics() {
         List<Integer> ints = new ArrayList<>();
         List<Number> numbers = new ArrayList<>();
         // numbers = ints; // can't compile that to avoid line below
@@ -43,7 +43,7 @@ public class GenericsAndArrays {
         System.out.println(numbers);
     }
 
-    private static void invariantArrays() {
+    private static void covariantArrays() {
         Integer[] ints = new Integer[2];
         Number[] numbers;
         numbers = ints; // OK!
@@ -55,7 +55,7 @@ public class GenericsAndArrays {
         }
     }
 
-    private static void invariantArrays2() {
+    private static void covariantArrays2() {
         Function<Integer> func1 = new IntegerListFunction();
         Function<Number> func2 = new NumberListFunction();
 //        Function<?>[] functions = new Function<Integer>[]{func1, func2};
