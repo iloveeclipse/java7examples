@@ -13,6 +13,7 @@ public class StringsInSwitch {
 
     public static void main(String[] args) {
         String os = System.getProperty("os.name");
+        // NB: if the string in switch is null, we will see NPE on the next line!
         switch (os) {
         case "Linux":
             System.out.println("Cool!");
