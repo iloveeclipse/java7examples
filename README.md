@@ -1,7 +1,7 @@
 # java7examples
 Originally hosted on http://code.google.com/p/java7examples
 
-The presentation gives an overview about some interesting Java 7 features
+The <a href="https://github.com/iloveeclipse/java7examples/blob/master/doc/Java7_highlights.ppt?raw=true">presentation</a> gives an overview about some interesting Java 7 features
 
 Java Programming Language Changes Highlights (project Coin)
 * Binary Literals
