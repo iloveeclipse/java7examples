@@ -9,10 +9,16 @@
  *******************************************************************************/
 package java8;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @SuppressWarnings("boxing")
 public class Lambdas {
@@ -70,6 +76,18 @@ public class Lambdas {
         lambdas.add(createCapturingLambda(1));
         System.out.println(lambdas.size());
 
+        // Constructor reference
+        Supplier<List<String>> supplier = ArrayList::new;
+        System.out.println(supplier.get());
+
+        // Method reference
+        Consumer<Object> println = System.out::println;
+        Arrays.asList(1, 2, 3).forEach(println);
+
+        List<Integer> list = Arrays.asList(3, 1, 2);
+        Comparator<Integer> comparator = Integer::compare;
+        list.sort(comparator);
+        list.forEach(println);
     }
 
     static Callable<Integer> createNonCapturingLambda(int i){
