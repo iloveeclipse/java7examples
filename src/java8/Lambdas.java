@@ -9,13 +9,14 @@
  *******************************************************************************/
 package java8;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -65,29 +66,56 @@ public class Lambdas {
 
         // Reuse
         HashSet<Callable<?>> lambdas = new HashSet<>();
-        lambdas.add(createNonCapturingLambda(1));
-        lambdas.add(createNonCapturingLambda(1));
-        lambdas.add(createNonCapturingLambda(1));
+        Callable<Integer> nc1 = createNonCapturingLambda(1);
+        lambdas.add(nc1);
+        Callable<Integer> nc2 = createNonCapturingLambda(1);
+        lambdas.add(nc2);
         System.out.println(lambdas.size());
 
+        Callable<Integer> another42 = () -> 42;
+        System.out.println(meaningOfLife == another42);
+        System.out.println(meaningOfLife.equals(another42));
+        System.out.println(meaningOfLife == nc1);
+
         lambdas = new HashSet<>();
-        lambdas.add(createCapturingLambda(1));
         lambdas.add(createCapturingLambda(1));
         lambdas.add(createCapturingLambda(1));
         System.out.println(lambdas.size());
 
         // Constructor reference
-        Supplier<List<String>> supplier = ArrayList::new;
+        Supplier<LinkedHashSet<String>> supplier = LinkedHashSet::new;
         System.out.println(supplier.get());
+
+        List<Integer> list = Arrays.asList(1, 3, 1, 2);
+
+        LinkedHashSet<Integer> set = list.stream().collect(LinkedHashSet::new, LinkedHashSet::add, LinkedHashSet::addAll);
+        System.out.println(set);
+
+        Supplier<LinkedHashSet<Integer>> supplier2 = LinkedHashSet::new;
+        BiConsumer<LinkedHashSet<Integer>, ? super Integer> biConsumer = LinkedHashSet::add;
+        BiConsumer<LinkedHashSet<Integer>, LinkedHashSet<Integer>> combiner = LinkedHashSet::addAll;
+        list.stream().collect(supplier2, biConsumer, combiner);
+
+        // Good old Java API to do the same
+        set = new LinkedHashSet<>(list);
 
         // Method reference
         Consumer<Object> println = System.out::println;
-        Arrays.asList(1, 2, 3).forEach(println);
+        list.forEach(println);
 
-        List<Integer> list = Arrays.asList(3, 1, 2);
         Comparator<Integer> comparator = Integer::compare;
         list.sort(comparator);
         list.forEach(println);
+
+        // this
+        System.out.println(new Lambdas().returnMe().call());
+
+        // Scope
+        int x = 42;
+        Consumer<Integer> c = (i) -> {
+            // Lambda expression's local variable x cannot redeclare another local variable defined in an enclosing scope.
+//            int x = i;
+        };
     }
 
     static Callable<Integer> createNonCapturingLambda(int i){
@@ -98,4 +126,14 @@ public class Lambdas {
         return () -> i;
     }
 
+
+    Callable<Object> returnMe(){
+        Callable<Object> returnMe = () -> this;
+        return returnMe;
+    }
+
+    @Override
+    public String toString() {
+        return "[Lambdas instance]";
+    }
 }
