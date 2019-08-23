@@ -14,9 +14,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -260,6 +262,7 @@ public class NmtPrinter {
         } catch (Exception e) {
             // don't care
         }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         while(true) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             execAndWaitFor(out, "/bin/jcmd", args[0], "VM.native_memory");
@@ -267,6 +270,7 @@ public class NmtPrinter {
             NmtData data = new NmtData(output);
 //            System.out.println(output);
 //            System.out.println("----");
+            System.out.println(formatter.format(new Date()) + ", next execution in " + timeout/1000 + " seconds");
             System.out.println(data);
             System.out.println("-----------------------------------------------------------------");
             if(data.data.isEmpty()) {
