@@ -79,6 +79,13 @@ public class NmtPrinter {
                     if (line.startsWith("Total:")) {
                         start = true;
                         total = new NmtSubEntry(line);
+                    } else if(line.startsWith("Native memory tracking is not enabled")) {
+                        line += ".\n Start target JVM with following arguments:\n";
+                        line += "-XX:+UnlockDiagnosticVMOptions\n" +
+                                "-XX:+PrintNMTStatistics\n" +
+                                "-XX:NativeMemoryTracking=summary\n";
+                        total = new NmtSubEntry(line);
+                        return;
                     }
                     continue;
                 }
@@ -184,15 +191,22 @@ public class NmtPrinter {
         Map<String, String> map;
         private final Map<String, Integer> numbers;
         NmtSubEntry(String line){
+            map = new LinkedHashMap<>();
             numbers = new LinkedHashMap<>();
+            if(line.contains("Native memory tracking is not enabled")) {
+                name = line;
+                return;
+            }
             String[] strings = line.split(":");
             name = strings[0].trim();
-            map = new LinkedHashMap<>();
             numbers.putAll(parse(strings[1], map));
         }
 
         @Override
         public String toString() {
+            if(map.isEmpty()) {
+                return name;
+            }
             return "               " + name + ": "+ map;
         }
     }
@@ -231,8 +245,20 @@ public class NmtPrinter {
     @SuppressWarnings("null")
     public static void main(String[] args) throws Exception {
         if(args == null || args.length < 1) {
-            System.err.println("Give a pid for JVM started with NMT enabled");
+            System.err.println("Give a pid for JVM started with NMT enabled and timeout in seconds to redo the measurement");
             System.exit(1);
+        }
+
+        int timeout = 5000;
+        try {
+            if(args.length > 1) {
+                timeout = Integer.parseInt(args[1]) * 1000;
+                if(timeout < 1000) {
+                    timeout = 1000;
+                }
+            }
+        } catch (Exception e) {
+            // don't care
         }
         while(true) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -243,7 +269,11 @@ public class NmtPrinter {
 //            System.out.println("----");
             System.out.println(data);
             System.out.println("-----------------------------------------------------------------");
-            Thread.sleep(5000);
+            if(data.data.isEmpty()) {
+                break;
+            }
+
+            Thread.sleep(timeout);
         }
     }
     /**
