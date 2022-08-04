@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("boxing")
 public class DataRace {
 
-    private static final int THREADS = 10;
+    private static final int THREADS = Runtime.getRuntime().availableProcessors();
     private static final int ITERATIONS = 1000;
 
     private static class Data {
@@ -50,7 +50,7 @@ public class DataRace {
             long count = 0;
             long oldValue = 0;
             long newValue = 0;
-            
+
             while(count < ITERATIONS) {
                 oldValue = data.get();
                 newValue = data.increment();
@@ -74,6 +74,7 @@ public class DataRace {
         pool.invokeAll(commands.values(), 10, TimeUnit.SECONDS);
         commands.forEach(DataRace::print);
         System.out.println("Final result: " + data.get());
+        pool.shutdownNow();
     }
 
     static void print(Integer i, DataRaceCheck d) {

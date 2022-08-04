@@ -115,6 +115,7 @@ public class OverSynchronized {
             commands.put(i, new DeadlockCheck());
         }
         pool.invokeAll(commands.values(), 10, TimeUnit.SECONDS);
+        pool.shutdownNow();
     }
 
 }

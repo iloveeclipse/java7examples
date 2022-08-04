@@ -39,5 +39,6 @@ public class MemoryConsistencyTest {
         for (int i = 0; i < threads; i++) {
             pool.execute(() -> modifyAndCheck(test));
         }
+        pool.shutdownNow();
     }
 }
